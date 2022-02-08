@@ -1,51 +1,24 @@
 import React, { useState, useEffect } from "react";
-//const USERS_URL = `https://randomuser.me/api`;
-//const USERS_URL = `https://api.themoviedb.org/3/search/movie?y=2009&api_key=01397a8a48c5389d13ae91dc2ed71feb&query=go%20with`;
-//const USERS_URL = `https://reqres.in/api/users`;
-const USERS_URL = `https://example.com/api/users`;
+
+const USERS_URL = 'https://example.com/api/users';
 const PAGE_SIZE = 10;
-// const styles = {
-// .pagination {
-//     text-align: "center"
-
-// },
-// .first-page-btn {
-//     text-align: "center"
-
-// },
-// .previos-page-btn {
-//     text-align: "center"
-
-// },
-// .next-page-btn {
-//     text-align: "center"
-
-// },
-// .last-page-btn {
-//     text-align: "center"
-
-// }
-// }
-
-export default function Table() {
+export default function Table () {
   const [users, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageone, setPageOne] = useState(false);
   const [pageend, setPageEnd] = useState(false);
-  const [page, setPage] = useState(0);
-  const [lastPage, setLastPage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
-    fetch(USERS_URL + `?page=1`)
+    fetch(USERS_URL + `?page=0`)
       .then((res) => res.json())
       .then((data) => {
+        setPageOne(false);
+        setPageEnd(false);        
         setLoading(false);
         setUser(data.results);
-        console.log(data.results);
         setLastPage(Math.ceil(data.count / PAGE_SIZE));
-        //setLastPage(data.total_pages);
-        console.log(Math.ceil(data.count / PAGE_SIZE);
-        console.log(data.results);
        })
       .catch((err) => {
         console.log(err);
@@ -53,6 +26,10 @@ export default function Table() {
   }, []);
 
   const gotofirstpage = (page) => {
+    setPageOne(false);
+    setPageEnd(false);
+
+
     setLoading(true);
     setPageOne(true);
     setPage(page);
@@ -98,7 +75,7 @@ export default function Table() {
         setLoading(false);
         setUser(data.results);
         setPageOne(false);
-        if (page === lastPage) {
+        if (page === lastPage-1) {
           setPageEnd(true);
         }
       })
@@ -116,7 +93,7 @@ export default function Table() {
         setLoading(false);
         setUser(data.results);
         setPageOne(false);
-        if (page === lastPage) {
+        if (page === lastPage-1) {
           setPageEnd(true);
         }
       })
@@ -142,52 +119,51 @@ export default function Table() {
     );
   };
 
+
+
+
   return (
     <div>
-      <table>
+      <table className="table">
         <thead>
           <tr>
-            <th> ID </th>
-            <th> First Name </th>
-            <th> Last Name </th>
+            <th>ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
           </tr>
         </thead>
         <tbody>
-          <Tbody users={users} />
+                  <Tbody users={users} />
         </tbody>
       </table>
       <section className="pagination">
-        <button
-          className="first-page-btn"
-          onClick={() => gotofirstpage(1)}
-          disabled={loading || pageone}
+        <button className="first-page-btn"
+                onClick={() => gotofirstpage()}
+                disabled={loading || pageone}
         >
-          first
+        first
         </button>
-        <button
-          className="previous-page-btn"
+
+
+
+        <button className="previous-page-btn"
           onClick={() => gotopreviouspage(page - 1)}
           disabled={loading || pageone}
+        >previous</button>
+        <button className="next-page-btn"
+        
+           onClick={() => gotonextpage(page + 1)}
+          disabled={loading || pageend}       
         >
-          {" "}
-          previous{" "}
+        {" "}
+          next
+        {" "}        
         </button>
-        <button
-          className="next-page-btn"
-          onClick={() => gotonextpage(page + 1)}
-          disabled={loading || pageend}
-        >
-          {" "}
-          next{" "}
-        </button>
-        <button
-          className="last-page-btn"
+        <button className="last-page-btn"
           onClick={() => gotolastpage(lastPage)}
-          disabled={loading || pageend}
-        >
-          last
-        </button>
+          disabled={loading || pageend}      
+        >last</button>
       </section>
     </div>
   );
-}
+};
